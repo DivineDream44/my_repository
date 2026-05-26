@@ -46,7 +46,7 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("Photo")
-    st.image(img, use_container_width=True)
+    st.image(img, width="stretch")
 
 exif_dict = load_exif(image_bytes)
 
