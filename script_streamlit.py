@@ -93,5 +93,8 @@ with col2:
             mime="image/jpeg"
         )
 
-            
+        st.subheader("Carte des coordonnées de la photo")
+        map1 = folium.Map(location=[lat, lon], zoom_start=13)
+        folium.Marker([lat, lon], popup="Position GPS de l'image").add_to(map1)
+        st_folium(map1, width=750, height=450) 
             
