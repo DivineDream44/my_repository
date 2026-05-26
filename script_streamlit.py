@@ -50,6 +50,9 @@ with col1:
 
 exif_dict = load_exif(image_bytes)
 
+lat = 43.073926
+lon = -89.385244
+
 with col2:
     st.subheader("Formulaire EXIF")
     with st.form("exif_form"):
@@ -63,8 +66,8 @@ with col2:
         file_copyright = st.text_input("Licence", "Unsplash")
         file_width = st.number_input("Largeur px", value=3636, step=1)
         file_height = st.number_input("Hauteur px", value=5454, step=1)
-        lat = st.number_input("Latitude", value=43.073926 , format="%.6f")
-        lon = st.number_input("Longitude", value=-89.385244 , format="%.6f")
+        lat = st.number_input("Latitude", value=lat, format="%.6f", key="lat_input")
+        lon = st.number_input("Longitude", value=lon, format="%.6f", key="lon_input")
         submit = st.form_submit_button("Mettre à jour")
 
     if submit:
@@ -93,8 +96,40 @@ with col2:
             mime="image/jpeg"
         )
 
-        st.subheader("Carte des coordonnées de la photo")
-        map1 = folium.Map(location=[lat, lon], zoom_start=13)
-        folium.Marker([lat, lon], popup="Position GPS de l'image").add_to(map1)
-        st_folium(map1, width=750, height=450) 
+st.divider()
+
+st.subheader("Carte des coordonnées de la photo")
+map1 = folium.Map(location=[lat, lon], zoom_start=13)
+folium.Marker([lat, lon], popup="Position GPS de l'image").add_to(map1)
+st_folium(map1, width=750, height=450, key="gps_map")
             
+st.divider()
+
+st.subheader("Carte POI")
+poi_list = [
+    ("Vaison-la-Romaine", 44.2407641, 5.075737),
+    ("Paris", 48.8588897, 2.320041),
+    ("Saint-Jean-de-Monts", 46.7936111, -2.0588889),
+    ("Soulac-sur-Mer", 45.513149, -1.1228789),
+    ("Argelès-sur-Mer", 42.5476734, 3.0253613),
+    ("Quiberon", 47.4874, -3.12152),
+    ("Biscaros", 43.2626963, -0.6130566),
+    ("La Roque-sur-Cèze", 44.193857, 4.5194678),
+    ("Chenonceau", 47.34701, 1.1691652),
+    ("Brissac", 43.8783291, 3.7027359),
+    ("Chambord", 48.8899454, 0.6095948),
+    ("Amboise", 47.4110351, 0.983698),
+    ("Fontainebleau", 48.4049375, 2.7015872),
+    ("Salou", 41.0768193, 1.1440411),
+    ("Barcelone", 41.3825802, 2.177073),
+    ("Bournemouth", 50.7201514, -1.8799118)
+]
+
+poi_gps = [(p[1], p[2]) for p in poi_list]
+map2 = folium.Map(location=poi_gps[0], zoom_start=6)
+
+for name, la, lo in poi_list:
+    folium.Marker([la, lo], popup=name, tooltip=name).add_to(map2)
+
+folium.PolyLine(poi_gps, color="pink", weight=3).add_to(map2)
+st_folium(map2, width=750, height=450)
